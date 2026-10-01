@@ -1,7 +1,7 @@
 *.zip
 test-plugin.html
 node_modules/
-sp-dashboard/manifest.json
+gamification/manifest.json
 coverage/
 .vitest/
 *.log

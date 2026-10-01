@@ -7,7 +7,7 @@ import fs from 'fs';
 import path from 'path';
 import { parse } from 'acorn';
 
-const target = process.argv[2] || 'sp-dashboard/index.html';
+const target = process.argv[2] || 'gamification/index.html';
 const full = path.resolve(process.cwd(), target);
 
 try {

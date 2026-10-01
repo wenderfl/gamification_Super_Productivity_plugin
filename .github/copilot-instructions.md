@@ -1,12 +1,12 @@
-# GitHub Copilot Instructions for Dashboard Plugin
+# GitHub Copilot Instructions for Gamification Plugin
 
 ## Project Overview
 
-This is a plugin for [Super Productivity](https://super-productivity.com) that provides a visual dashboard with metrics, charts, and daily summaries of your tasks and tracked time. The plugin is built with vanilla JavaScript, HTML, and CSS, and integrates with Super Productivity's plugin API.
+This is a plugin for [Super Productivity](https://super-productivity.com) that exchanges recorded study hours for rewards, with a weekly balance and redemption history. The plugin is built with vanilla JavaScript, HTML, and CSS, and integrates with Super Productivity's plugin API.
 
 ## Repository Structure
 
-- `sp-dashboard/` - Main plugin files
+- `gamification/` - Main plugin files
   - `index.html` - Main UI with embedded JavaScript and CSS
   - `plugin.js` - Plugin registration and header button
   - `manifest.json.template` - Plugin metadata template
@@ -26,7 +26,7 @@ This is a plugin for [Super Productivity](https://super-productivity.com) that p
 - Avoid global pollution - scope variables appropriately
 
 ### HTML/CSS
-- All plugin code is embedded in `sp-dashboard/index.html`
+- All plugin code is embedded in `gamification/index.html`
 - Use CSS custom properties (variables) for theming
 - Support both light and dark themes via `.dark-theme` body class
 - Use semantic HTML elements where possible

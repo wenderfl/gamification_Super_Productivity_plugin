@@ -1,70 +1,51 @@
-# Dashboard Plugin for Super Productivity
+# Gamification
 
-A lightweight dashboard plugin for [Super Productivity](https://super-productivity.com) that visualizes time tracked, completed tasks, overdue items, and project breakdowns within a user-defined date range.
+A minimal study rewards plugin for Super Productivity, adapted from [sp-dashboard](https://github.com/ahanel13/sp-dashboard). Original MIT license preserved.
 
----
+## Install or update
 
-## Features
+1. Open **Super Productivity → Settings → Plugins**.
+2. Import **gamification.zip** from the project root.
+3. Open **Gamification** and choose your study project in Settings.
 
-- Selectable date ranges: past week, current month, year, or custom range
-- **Dashboard** — key metrics (time tracked, tasks completed, overdue, late), daily trend bar chart, and project/tag breakdown pie chart
-- **Detailed List** — sortable table of every time entry with project, task, duration, and status
-- **By Project / Tag** — drill into any project or tag for dedicated stats, a daily trend chart, and a filtered task list
-- Live updates whenever task data changes in Super Productivity
-- Adapts to light and dark themes automatically
-- **Settings** — a gear in the tab bar opens six panels of configuration (below)
+Version 2.2.0 keeps the existing storage identity, `sp-study-rewards`, and the same data schema. Reimport the ZIP to update; do not delete plugin data. Existing reward names and history stay unchanged.
 
----
+## Interface
 
-## Settings
+- English labels, compact summaries and icon buttons.
+- Rewards / History segmented navigation.
+- Vertical **9:16** covers in grid, list and image preview.
+- Search, categories, editable rewards, redemption confirmation and undo.
+- Images from HTTP/HTTPS URLs or uploaded JPG, PNG, WebP and GIF files (10 MB max).
+- Uploaded covers become JPEG thumbnails up to 480 px; GIFs become still images.
+- Broken image URLs show a fallback. Use an upload if the host blocks a remote image.
 
-Changes apply immediately; there is no Save. Everything is stored in one browser entry you can
-export, import, or reset from Settings › Advanced.
+## Balance
 
-| Section | What you can change |
-| --- | --- |
-| **General** | Start of week, date format, time format (`3h 45m` / `3.75h` / `225m`), working days, hide non-working days from charts |
-| **Defaults** | What each control shows on open — remember the last value, or pin a fixed one: period, opening tab, chart metrics, table sort, project/tag split |
-| **Data & Filtering** | Include archived tasks, exclude projects or tags, count the running timer, list subtasks as rows, minimum entry length, how undated tasks count toward overdue, hide empty projects/tags |
-| **Appearance** | Theme override, chart palette (incl. colourblind-safe), bar-chart grouping, "Other" grouping for small pie slices, density, which stat cards show, rows per page |
-| **Goals** | Daily time target and daily task target (dashed line on the bar chart), weekly time target (progress bar on the Total Time card) |
-| **Advanced** | Auto-refresh interval, debug logging, export filename pattern, text-summary format (Slack / Markdown / CSV), export / import / reset |
+**Available = study hours recorded this week − this week's redemptions.**
 
-Two of these are worth knowing about even if you change nothing else: **Include archived tasks** is
-the biggest speed-up available on a vault with a long history, and everything under **Data &
-Filtering** changes what the numbers mean, not just how they look.
+Weeks run Monday to Sunday in the local timezone. Unused hours expire on Monday.
+Choose a study project to exclude other activities. Changing the project does not remove spent hours.
+Active and archived tasks are deduplicated; subtasks are not counted twice.
+Deleting a reward preserves history. Undoing an older redemption does not credit the current week.
 
----
+## Data
 
-## Preview
+Settings, rewards and history use the official `loadSyncedData/persistDataSynced` APIs.
+Writes update the UI after the API succeeds. Failed reads never overwrite saved data.
+The payload has a conservative 900 KB limit; use URLs or remove covers if storage is full.
+Sync follows the host configuration. The API does not offer atomic transactions between devices.
+Refresh happens on host events, when returning to the view, and every 30 seconds.
 
-![Dashboard View](assets/dashboard.png)
-*Dashboard with key metrics and charts.*
+## Development
 
-![Detailed List View](assets/detailed_list.png)
-*Detailed list of individual time entries and task statuses.*
+```sh
+npm ci
+npm test
+npm run check:syntax
+make build
+PLUGIN_HTML=build/gamification/index.html npm run test:browser
+```
 
-![By Project / Tag View](assets/drilldown.png)
-*Drill-down view showing stats, daily trend, and tasks for a selected project or tag.*
-
----
-
-## Installation
-
-1. Download `sp-dashboard.zip` from the latest [Release](https://github.com/ahanel13/sp-dashboard/releases)
-2. Open Super Productivity
-3. Go to **Settings → Plugins**
-4. Click **Load Plugin from Folder** and select the zip file
-5. The plugin activates automatically
-
----
-
-## Issues & Feedback
-
-File a bug or feature request on the [GitHub repository](https://github.com/ahanel13/sp-dashboard). Screenshots and reproduction steps are always appreciated.
-
----
-
-## License
-
-MIT © 2026 Douglas Cooper, Anthony Hanel — see [LICENSE](LICENSE) for full text.
+HTML, CSS and JavaScript are self-contained. Browser tests use a simulated host API and save desktop/mobile screenshots in `assets/`.
+Explicit standalone `?demo=1` mode uses fictitious hours and separate browser storage.

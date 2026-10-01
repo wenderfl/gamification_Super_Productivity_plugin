@@ -1,7 +1,7 @@
-# Makefile for Date Range Reporter Plugin
+# Makefile for Gamification Plugin
 # Builds a distributable zip file for Super Productivity
 
-PROJECT = sp-dashboard
+PROJECT = gamification
 PLUGIN_DIR = $(PROJECT)
 ZIP_FILE = $(PROJECT).zip
 VERSION := $(shell grep '"version"' package.json | sed 's/.*"version": "\(.*\)".*/\1/')

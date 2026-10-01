@@ -1,14 +1,17 @@
 {
-  "id": "sp-dashboard",
-  "name": "Dashboard",
+  "id": "sp-study-rewards",
+  "name": "Gamification",
   "version": "{{VERSION}}",
   "description": "{{DESCRIPTION}}",
   "manifestVersion": 1,
   "minSupVersion": "14.0.0",
-  "author": "Douglas Cooper",
+  "author": "Wender Fernandes; based on sp-dashboard by Douglas Cooper and Anthony Hanel",
   "icon": "icon.svg",
   "iFrame": true,
   "sidePanel": false,
+  "hooks": [
+    "action"
+  ],
   "permissions": [
     "getTasks",
     "getArchivedTasks",

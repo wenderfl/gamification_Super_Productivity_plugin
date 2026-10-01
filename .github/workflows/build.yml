@@ -24,9 +24,7 @@ jobs:
     - name: Upload plugin artifact
       uses: actions/upload-artifact@v4
       with:
-        name: sp-dashboard-plugin
-        path: |
-          sp-dashboard/*
-          !sp-dashboard/manifest.json.template
+        name: gamification-plugin
+        path: gamification.zip
         retention-days: 90
         compression-level: 0

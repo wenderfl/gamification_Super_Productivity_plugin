@@ -1,15 +1,16 @@
 {
-  "name": "sp-dashboard",
-  "version": "1.6.0",
-  "description": "A visual dashboard plugin providing metrics, charts, and daily summaries of your tasks and tracked time.",
+  "name": "gamification",
+  "version": "2.2.0",
+  "description": "Trade study hours for movies, games and rewards.",
   "type": "module",
   "scripts": {
     "test": "vitest run",
     "test:watch": "vitest",
     "test:coverage": "vitest run --coverage",
-    "build:min": "./scripts/minify.sh sp-dashboard",
+    "build:min": "./scripts/minify.sh gamification",
     "check:syntax": "node scripts/check-js.js",
-    "screenshot": "node scripts/screenshot.js"
+    "screenshot": "node scripts/test-rewards-browser.js",
+    "test:browser": "node scripts/test-rewards-browser.js"
   },
   "devDependencies": {
     "@vitest/coverage-v8": "^1.0.4",
@@ -22,7 +23,9 @@
   "keywords": [
     "super-productivity",
     "plugin",
-    "dashboard"
+    "gamification",
+    "study",
+    "rewards"
   ],
   "author": "Super Productivity Community",
   "license": "MIT",

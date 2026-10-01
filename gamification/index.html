@@ -1,0 +1,2264 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Gamification · Rewards</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        --bg: #101010;
+        --panel: #191919;
+        --raised: #242424;
+        --muted: #a4aaa6;
+        --text: #f5f7f5;
+        --green: #1ed760;
+        --line: #ffffff12;
+        --danger: #ff9c94;
+      }
+      * {
+        box-sizing: border-box;
+      }
+      body {
+        margin: 0;
+        background: var(--bg);
+        color: var(--text);
+        font:
+          14px/1.5 Inter,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+      }
+      button,
+      input,
+      select {
+        font: inherit;
+      }
+      button {
+        cursor: pointer;
+        border: 0;
+        color: inherit;
+        background: none;
+      }
+      button:disabled {
+        cursor: not-allowed;
+        opacity: 0.4;
+      }
+      button,
+      input,
+      select {
+        outline-offset: 4px;
+      }
+      button:focus-visible,
+      input:focus-visible,
+      select:focus-visible {
+        outline: 2px solid var(--green);
+      }
+      button:hover:not(:disabled) {
+        filter: brightness(1.12);
+      }
+      input,
+      select {
+        color: var(--text);
+        background: #252525;
+        border: 1px solid #ffffff20;
+        border-radius: 10px;
+        padding: 12px;
+        width: 100%;
+      }
+      input::placeholder {
+        color: #818781;
+      }
+      select {
+        cursor: pointer;
+      }
+      h1,
+      h2,
+      h3,
+      p {
+        margin: 0;
+      }
+      svg {
+        width: 20px;
+        height: 20px;
+        flex-shrink: 0;
+        vertical-align: middle;
+        fill: none;
+        stroke: currentColor;
+        stroke-width: 1.8;
+        stroke-linecap: round;
+        stroke-linejoin: round;
+      }
+      [hidden] {
+        display: none !important;
+      }
+      .shell {
+        max-width: 1320px;
+        margin: auto;
+        padding: 30px 42px 48px;
+      }
+      .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 20px;
+        margin-bottom: 32px;
+      }
+      .eyebrow {
+        font-size: 10px;
+        font-weight: 700;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        color: var(--muted);
+      }
+      .icon-button {
+        padding: 0;
+        margin: 0;
+        line-height: 1;
+        flex-shrink: 0;
+        width: 38px;
+        height: 38px;
+        display: inline-grid;
+        place-items: center;
+        border-radius: 50%;
+        background: #ffffff09;
+      }
+      .actions {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+      }
+      .hero {
+        border-radius: 22px;
+        padding: 32px 36px;
+        background:
+          radial-gradient(ellipse at 86% 0%, #1c4932 0%, transparent 62%),
+          linear-gradient(120deg, #1d3024, #18211b 68%);
+        border: 1px solid #ffffff0c;
+        display: grid;
+        grid-template-columns: 1.05fr 1fr;
+        gap: 48px;
+        margin-bottom: 32px;
+      }
+      .hero h1 {
+        font-size: clamp(23px, 3vw, 34px);
+        letter-spacing: -1.2px;
+        font-weight: 650;
+        margin-top: 8px;
+      }
+      .week-label {
+        color: #abc2af;
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      .big-number {
+        font-size: 58px;
+        letter-spacing: -3px;
+        font-weight: 750;
+        line-height: 1.2;
+        margin-top: 24px;
+      }
+      .big-number span {
+        font-size: 27px;
+        font-weight: 450;
+        letter-spacing: -1px;
+        color: #b4cbbb;
+      }
+      .stats {
+        display: flex;
+        gap: 30px;
+        margin-top: 22px;
+      }
+      .stats strong {
+        display: block;
+        font-size: 21px;
+        font-weight: 650;
+        letter-spacing: -0.6px;
+      }
+      .stats small {
+        font-size: 11px;
+        color: #adc1b2;
+      }
+      .balance {
+        color: var(--green);
+      }
+      .week-chart {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+      }
+      .chart-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        color: #c5d3c9;
+        font-size: 12px;
+      }
+      .chart-head strong {
+        color: var(--green);
+        font-size: 12px;
+      }
+      .bars {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        align-items: end;
+        gap: 14px;
+        height: 128px;
+        margin-top: 18px;
+      }
+      .day {
+        height: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 8px;
+      }
+      .track {
+        width: 100%;
+        max-width: 34px;
+        height: 98px;
+        background: #ffffff05;
+        border-radius: 5px;
+        display: flex;
+        align-items: flex-end;
+        overflow: hidden;
+      }
+      .bar {
+        width: 100%;
+        background: #528566;
+        border-radius: 5px;
+        min-height: 3px;
+      }
+      .today .bar {
+        background: var(--green);
+      }
+      .day small {
+        font-size: 10px;
+        color: #a2b4a7;
+      }
+      .today small {
+        color: var(--green);
+      }
+      .goal {
+        height: 4px;
+        background: #ffffff12;
+        border-radius: 10px;
+        overflow: hidden;
+        margin-top: 20px;
+      }
+      .goal i {
+        height: 100%;
+        display: block;
+        background: var(--green);
+        border-radius: 10px;
+      }
+      .goal-caption {
+        display: flex;
+        justify-content: space-between;
+        font-size: 10px;
+        color: #a2b4a7;
+        margin-top: 7px;
+      }
+      .section-head {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 18px;
+      }
+      .section-head h2 {
+        font-size: 24px;
+        letter-spacing: -0.8px;
+      }
+      .section-head p {
+        color: var(--muted);
+        font-size: 12px;
+        margin-top: 4px;
+      }
+      .primary {
+        background: var(--green);
+        color: #072210;
+        border-radius: 25px;
+        font-weight: 750;
+        padding: 12px 21px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 7px;
+        white-space: nowrap;
+      }
+      .secondary {
+        border: 1px solid #ffffff28;
+        border-radius: 25px;
+        padding: 10px 19px;
+        font-weight: 600;
+      }
+      .toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        margin: 24px 0 20px;
+      }
+      .filters {
+        display: flex;
+        gap: 7px;
+        flex-wrap: wrap;
+      }
+      .chip {
+        padding: 7px 14px;
+        border-radius: 20px;
+        background: #232323;
+        font-size: 12px;
+      }
+      .chip[aria-pressed="true"] {
+        background: #f0f4f1;
+        color: #171b18;
+      }
+      .search-view {
+        display: flex;
+        gap: 12px;
+        align-items: center;
+      }
+      .search {
+        position: relative;
+      }
+      .search svg {
+        position: absolute;
+        left: 12px;
+        top: 11px;
+        width: 16px;
+        color: var(--muted);
+      }
+      .search input {
+        padding: 9px 10px 9px 36px;
+        font-size: 12px;
+        max-width: 200px;
+        background: #191919;
+        border-color: transparent;
+        border-radius: 25px;
+      }
+      .toggle {
+        display: flex;
+        border-radius: 10px;
+        padding: 3px;
+        background: #191919;
+      }
+      .toggle button {
+        border-radius: 7px;
+        padding: 6px;
+        color: var(--muted);
+        line-height: 1;
+      }
+      .toggle button[aria-pressed="true"] {
+        background: #343434;
+        color: #fff;
+      }
+      .cards {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(190px, 1fr));
+        gap: 20px;
+      }
+      .card {
+        padding: 12px;
+        background: var(--panel);
+        border-radius: 13px;
+        transition:
+          background 0.15s,
+          transform 0.15s;
+        min-width: 0;
+        position: relative;
+      }
+      .card:hover {
+        background: #232323;
+        transform: translateY(-2px);
+      }
+      .art {
+        aspect-ratio: 9 / 16;
+        overflow: hidden;
+        border-radius: 8px;
+        display: grid;
+        place-items: center;
+        position: relative;
+        background:
+          radial-gradient(circle at 75% 15%, #38674a, transparent 70%), #20392b;
+        color: #c2ebcc;
+      }
+      .art[data-kind="Filme"] {
+        background:
+          radial-gradient(circle at 75% 15%, #436b79, transparent 70%), #20303b;
+        color: #c1e3eb;
+      }
+      .art[data-kind="Jogo"] {
+        background:
+          radial-gradient(circle at 75% 15%, #665386, transparent 70%), #32283f;
+        color: #dbd0ee;
+      }
+      .art[data-kind="Experiência"] {
+        background:
+          radial-gradient(circle at 75% 15%, #8b6a3f, transparent 70%), #403425;
+        color: #eedaaf;
+      }
+      .art > svg {
+        width: 56px;
+        height: 56px;
+        stroke-width: 1;
+      }
+      .art img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        position: absolute;
+        inset: 0;
+      }
+      .art .image-failed {
+        position: absolute;
+        bottom: 9px;
+        font-size: 9px;
+        padding: 3px 7px;
+        background: #0009;
+        border-radius: 6px;
+        color: #fff;
+      }
+      .edit-card {
+        position: absolute;
+        right: 20px;
+        top: 20px;
+        z-index: 1;
+        background: #101010ba;
+        width: 29px;
+        height: 29px;
+      }
+      .edit-card svg {
+        width: 14px;
+      }
+      .card h3 {
+        font-size: 15px;
+        font-weight: 650;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+        margin: 14px 0 2px;
+      }
+      .kind {
+        font-size: 11px;
+        color: var(--muted);
+      }
+      .cost-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 5px;
+        margin-top: 18px;
+      }
+      .cost {
+        font-size: 13px;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        font-weight: 650;
+      }
+      .cost svg {
+        width: 14px;
+        height: 14px;
+        color: var(--green);
+      }
+      .redeem {
+        background: #1ed760;
+        color: #062611;
+        border-radius: 20px;
+        padding: 8px 12px;
+        font-size: 11px;
+        font-weight: 750;
+      }
+      .redeem:disabled {
+        background: #303530;
+        color: #9ba59e;
+        opacity: 1;
+      }
+      .cards.list {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+      .list .card {
+        display: grid;
+        grid-template-columns: 62px 1fr 210px;
+        gap: 18px;
+        align-items: center;
+        padding: 10px 18px 10px 10px;
+      }
+      .list .art {
+        width: 62px;
+      }
+      .list .art > svg {
+        width: 29px;
+        height: 29px;
+      }
+      .list .card h3 {
+        margin-top: 0;
+      }
+      .list .cost-row {
+        margin: 0;
+        padding-right: 42px;
+      }
+      .list .edit-card {
+        top: 50%;
+        right: 13px;
+        transform: translateY(-50%);
+      }
+      .empty {
+        text-align: center;
+        border: 1px dashed #ffffff1e;
+        border-radius: 16px;
+        padding: 52px 20px;
+        color: var(--muted);
+        grid-column: 1/-1;
+      }
+      .empty svg {
+        width: 38px;
+        height: 38px;
+        color: var(--green);
+        margin-bottom: 15px;
+      }
+      .empty h3 {
+        color: var(--text);
+        margin-bottom: 5px;
+        font-size: 18px;
+      }
+      .empty p {
+        font-size: 12px;
+        margin-bottom: 19px;
+      }
+      .footnote {
+        font-size: 11px;
+        color: #7d867f;
+        display: flex;
+        align-items: center;
+        gap: 7px;
+        margin-top: 28px;
+      }
+      .footnote svg {
+        width: 14px;
+        height: 14px;
+      }
+      .history-row {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+        padding: 17px 0;
+        border-bottom: 1px solid var(--line);
+      }
+      .history-row .history-info {
+        flex: 1;
+        min-width: 0;
+      }
+      .history-info strong {
+        display: block;
+        overflow-wrap: anywhere;
+      }
+      .history-info small {
+        color: var(--muted);
+        font-size: 11px;
+      }
+      .history-row > svg {
+        color: var(--green);
+      }
+      .history-cost {
+        font-size: 13px;
+        color: #cbd5ce;
+      }
+      .undo {
+        font-size: 11px;
+        color: var(--muted);
+        text-decoration: underline;
+      }
+      .notice {
+        background: #342b1d;
+        color: #f4dba8;
+        border: 1px solid #776441;
+        padding: 12px 16px;
+        border-radius: 12px;
+        font-size: 12px;
+        margin-bottom: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+      }
+      .notice button {
+        text-decoration: underline;
+      }
+      .dialog {
+        border: 1px solid #ffffff20;
+        background: #1c1c1c;
+        color: var(--text);
+        border-radius: 20px;
+        width: min(520px, calc(100% - 32px));
+        padding: 28px;
+        max-height: 90vh;
+        overflow: auto;
+        box-shadow: 0 25px 90px #0009;
+      }
+      .dialog::backdrop {
+        background: #000a;
+        backdrop-filter: blur(6px);
+      }
+      .modal-heading {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: 23px;
+      }
+      .modal-heading h2 {
+        font-size: 23px;
+        letter-spacing: -0.6px;
+      }
+      .field {
+        display: block;
+        font-size: 12px;
+        color: #c8ceca;
+        margin-bottom: 17px;
+      }
+      .field input,
+      .field select {
+        margin-top: 7px;
+      }
+      .form-row {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+      }
+      .hint {
+        font-size: 11px;
+        color: var(--muted);
+        line-height: 1.6;
+      }
+      .image-controls {
+        display: grid;
+        grid-template-columns: 100px 1fr;
+        gap: 18px;
+        align-items: center;
+        margin: 15px 0;
+      }
+      .image-controls .art {
+        width: 100px;
+      }
+      .image-controls .art svg {
+        width: 32px;
+      }
+      .image-tabs {
+        display: flex;
+        gap: 6px;
+        margin-bottom: 12px;
+      }
+      .image-tabs button {
+        padding: 6px 13px;
+        font-size: 11px;
+      }
+      .image-controls input {
+        font-size: 11px;
+        padding: 10px;
+      }
+      .file-label {
+        display: block;
+        border: 1px dashed #ffffff35;
+        padding: 10px;
+        text-align: center;
+        border-radius: 9px;
+        cursor: pointer;
+        font-size: 11px;
+      }
+      .file-label input {
+        padding: 0;
+        border: 0;
+        margin-top: 8px;
+        max-width: 220px;
+        font-size: 10px;
+      }
+      .clear-image {
+        color: var(--muted);
+        font-size: 10px;
+        padding: 7px 0;
+      }
+      .modal-footer {
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 10px;
+        margin-top: 25px;
+      }
+      .delete {
+        margin-right: auto;
+        color: var(--danger);
+        font-size: 12px;
+      }
+      .error {
+        color: var(--danger);
+        font-size: 12px;
+        margin-top: 10px;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: 25px;
+        transform: translateX(-50%);
+        background: #f1f5f2;
+        color: #18251b;
+        padding: 13px 23px;
+        border-radius: 12px;
+        box-shadow: 0 8px 40px #0008;
+        z-index: 10;
+        max-width: 90%;
+        font-size: 13px;
+      }
+      .status-pills {
+        display: flex;
+        gap: 18px;
+        margin-top: 12px;
+      }
+      .status-pills button {
+        padding: 0 0 9px;
+        color: var(--muted);
+        border-bottom: 2px solid transparent;
+        font-size: 12px;
+      }
+      .status-pills .selected {
+        border-color: var(--green);
+        color: var(--text);
+      }
+      .loading .primary,
+      .loading .redeem {
+        pointer-events: none;
+        opacity: 0.4;
+      }
+      @media (min-width: 1200px) {
+        .cards {
+          grid-template-columns: repeat(5, 1fr);
+        }
+      }
+      @media (max-width: 850px) {
+        .shell {
+          padding: 24px;
+        }
+        .hero {
+          gap: 25px;
+          padding: 25px;
+        }
+        .search input {
+          max-width: 150px;
+        }
+        .cards {
+          grid-template-columns: repeat(auto-fill, minmax(170px, 1fr));
+        }
+        .toolbar {
+          align-items: flex-start;
+          flex-wrap: wrap;
+        }
+      }
+      @media (max-width: 560px) {
+        .shell {
+          padding: 18px 16px;
+        }
+        .topbar {
+          margin-bottom: 22px;
+        }
+        .hero {
+          grid-template-columns: 1fr;
+          gap: 26px;
+          padding: 23px;
+        }
+        .big-number {
+          font-size: 48px;
+          margin-top: 16px;
+        }
+        .hero h1 {
+          font-size: 27px;
+        }
+        .bars {
+          height: 90px;
+        }
+        .track {
+          height: 65px;
+        }
+        .section-head h2 {
+          font-size: 21px;
+        }
+        .section-head {
+          align-items: flex-start;
+        }
+        .section-head .primary {
+          font-size: 11px;
+          padding: 10px 13px;
+        }
+        .section-head p {
+          max-width: 195px;
+        }
+        .cards {
+          grid-template-columns: repeat(2, minmax(0, 1fr));
+          gap: 12px;
+        }
+        .card {
+          padding: 9px;
+        }
+        .card h3 {
+          font-size: 13px;
+        }
+        .cost-row {
+          flex-wrap: wrap;
+          gap: 10px;
+        }
+        .redeem {
+          width: 100%;
+        }
+        .edit-card {
+          right: 15px;
+          top: 15px;
+        }
+        .list .card {
+          grid-template-columns: 52px 1fr;
+          gap: 12px;
+          padding: 10px;
+        }
+        .list .art {
+          width: 52px;
+          grid-row: 1/3;
+        }
+        .list .cost-row {
+          grid-column: 2;
+          flex-wrap: nowrap;
+          padding-right: 0;
+          margin-right: 30px;
+        }
+        .list .redeem {
+          width: auto;
+        }
+        .list .card h3 {
+          padding-right: 25px;
+        }
+        .list .edit-card {
+          top: 22px;
+        }
+        .form-row {
+          grid-template-columns: 1fr;
+          gap: 0;
+        }
+        .dialog {
+          padding: 22px;
+        }
+        .history-row {
+          gap: 9px;
+        }
+        .history-cost {
+          font-size: 11px;
+        }
+        .stats {
+          gap: 28px;
+        }
+        .search-view {
+          width: 100%;
+          justify-content: space-between;
+        }
+        .search input {
+          max-width: none;
+          width: 215px;
+        }
+      }
+      @media (prefers-reduced-motion: reduce) {
+        * {
+          transition: none !important;
+        }
+      }
+
+      /* Compact English interface and accessible segmented navigation. */
+      .hero {
+        padding: 26px 32px;
+        gap: 38px;
+        margin-bottom: 28px;
+      }
+      .hero h1 {
+        font-size: 24px;
+        letter-spacing: -0.7px;
+        margin-top: 0;
+      }
+      .big-number {
+        margin-top: 18px;
+        font-size: 54px;
+      }
+      .big-number span {
+        font-size: 21px;
+        letter-spacing: -0.5px;
+      }
+      .topbar {
+        margin-bottom: 24px;
+      }
+      .status-pills {
+        display: inline-flex;
+        gap: 4px;
+        padding: 5px;
+        margin-top: 20px;
+        background: #1b1b1b;
+        border: 1px solid #ffffff0d;
+        border-radius: 14px;
+      }
+      .status-pills button {
+        appearance: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 9px;
+        min-height: 42px;
+        padding: 0 20px;
+        border: 0;
+        border-radius: 10px;
+        background: transparent;
+        color: #a7ada9;
+        font-family: inherit;
+        font-size: 13px;
+        font-weight: 600;
+        line-height: 1.2;
+        box-shadow: none;
+        transition:
+          background 0.15s,
+          color 0.15s;
+      }
+      .status-pills button svg {
+        width: 17px;
+        height: 17px;
+      }
+      .status-pills button:hover:not(:disabled) {
+        background: #ffffff09;
+        color: #fff;
+        filter: none;
+      }
+      .status-pills button.selected {
+        border: 0;
+        background: #1ed76018;
+        color: var(--green);
+        box-shadow: inset 0 0 0 1px #1ed76024;
+      }
+      button {
+        -webkit-tap-highlight-color: transparent;
+      }
+      button:focus:not(:focus-visible) {
+        outline: none;
+      }
+      .primary,
+      .secondary {
+        min-height: 42px;
+        padding: 10px 19px;
+        font-size: 13px;
+        gap: 8px;
+      }
+      .primary svg {
+        width: 17px;
+        height: 17px;
+      }
+      .toggle button {
+        width: 34px;
+        height: 34px;
+        display: grid;
+        place-items: center;
+      }
+      .chip {
+        min-height: 34px;
+        padding: 7px 14px;
+      }
+      .card .redeem {
+        min-height: 36px;
+        padding: 8px 14px;
+        font-size: 12px;
+      }
+      .art {
+        aspect-ratio: 9 / 16;
+      }
+      .art img {
+        object-fit: cover;
+        object-position: center;
+      }
+      .list .card {
+        grid-template-columns: 54px 1fr 210px;
+      }
+      .list .art {
+        width: 54px;
+        aspect-ratio: 9 / 16;
+      }
+      .image-controls {
+        grid-template-columns: 82px minmax(0, 1fr);
+      }
+      .image-controls .art {
+        width: 82px;
+        aspect-ratio: 9 / 16;
+      }
+      #image-file {
+        position: absolute;
+        width: 1px;
+        height: 1px;
+        padding: 0;
+        overflow: hidden;
+        clip-path: inset(50%);
+        white-space: nowrap;
+      }
+      .file-label {
+        min-height: 42px;
+        display: grid;
+        place-items: center;
+      }
+      .file-label:focus-within {
+        outline: 2px solid var(--green);
+        outline-offset: 3px;
+      }
+      .footnote {
+        margin-top: 20px;
+      }
+      @media (max-width: 560px) {
+        .hero {
+          padding: 22px;
+          gap: 24px;
+        }
+        .hero h1 {
+          font-size: 22px;
+        }
+        .big-number {
+          font-size: 43px;
+        }
+        .big-number span {
+          font-size: 19px;
+        }
+        .status-pills {
+          display: flex;
+          width: 100%;
+        }
+        .status-pills button {
+          flex: 1;
+          padding: 0 14px;
+          min-height: 42px;
+        }
+        .section-head {
+          align-items: center;
+        }
+        .section-head h2 {
+          font-size: 21px;
+        }
+        .list .card {
+          grid-template-columns: 46px minmax(0, 1fr);
+        }
+        .list .art {
+          width: 46px;
+        }
+        .card .redeem {
+          font-size: 11px;
+        }
+      }
+    /* Keep the header action and its glyph centered, including host themes. */
+      .topbar .actions { margin-left: auto; align-self: center; }
+      #settings-open {
+        appearance: none;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        width: 38px;
+        height: 38px;
+        padding: 0;
+        margin: 0;
+        border: 0;
+        line-height: 1;
+      }
+      #settings-open svg {display: block; width: 20px; height: 20px; margin: 0; flex: 0 0 20px;}
+    </style>
+  </head>
+  <body class="loading">
+    <main class="shell">
+      <header class="topbar">
+        <div class="actions"><button
+            class="icon-button"
+            id="settings-open"
+            aria-label="Settings"
+            title="Settings"
+            data-icon="settings"
+          ></button>
+        </div>
+      </header>
+      <div id="notice" class="notice" hidden>
+        <span id="notice-text"></span><button id="retry">Retry</button>
+      </div>
+      <section class="hero" aria-label="Weekly summary">
+        <div>
+          <h1>This week</h1>
+          <p class="week-label" id="week-label"></p>
+          <div class="big-number" id="studied">—<span> studied</span></div>
+          <div class="stats">
+            <div>
+              <strong class="balance" id="balance">—</strong
+              ><small>Available</small>
+            </div>
+            <div><strong id="spent">—</strong><small>Redeemed</small></div>
+          </div>
+        </div>
+        <div class="week-chart">
+          <div class="chart-head">
+            <span>Activity</span><strong id="goal-summary"></strong>
+          </div>
+          <div id="bars" class="bars" aria-label="Study hours by day"></div>
+          <div class="goal"><i id="goal-progress"></i></div>
+          <div class="goal-caption">
+            <span id="goal-caption"></span><span id="goal-percent"></span>
+          </div>
+        </div>
+      </section>
+      <section aria-labelledby="rewards-title">
+        <div class="section-head">
+          <div>
+            <h2 id="rewards-title">Your rewards</h2>
+          </div>
+          <button id="add" class="primary">
+            <span data-icon="plus"></span>Add reward
+          </button>
+        </div>
+        <div class="status-pills" role="group" aria-label="Reward views">
+          <button id="catalog-tab" class="selected" aria-pressed="true">
+            <span data-icon="gift"></span>Rewards
+          </button>
+          <button id="history-tab" aria-pressed="false">
+            <span data-icon="clock"></span>History
+          </button>
+        </div>
+        <div id="toolbar" class="toolbar">
+          <div class="filters" id="filters">
+            <button class="chip" data-filter="Todos" aria-pressed="true">
+              All</button
+            ><button class="chip" data-filter="Filme" aria-pressed="false">
+              Movies</button
+            ><button class="chip" data-filter="Jogo" aria-pressed="false">
+              Games</button
+            ><button class="chip" data-filter="Item" aria-pressed="false">
+              Items</button
+            ><button
+              class="chip"
+              data-filter="Experiência"
+              aria-pressed="false"
+            >
+              Experiences
+            </button>
+          </div>
+          <div class="search-view">
+            <label class="search"
+              ><span data-icon="search"></span
+              ><input
+                id="search"
+                placeholder="Search rewards"
+                aria-label="Search rewards"
+            /></label>
+            <div class="toggle" aria-label="View">
+              <button
+                id="grid-view"
+                aria-label="Grid view"
+                aria-pressed="true"
+                data-icon="grid"
+              ></button
+              ><button
+                id="list-view"
+                aria-label="List view"
+                aria-pressed="false"
+                data-icon="list"
+              ></button>
+            </div>
+          </div>
+        </div>
+        <div id="cards" class="cards"></div>
+        <div id="history" hidden></div>
+        <p class="footnote">
+          <span data-icon="info"></span><span id="scope-note">Loading…</span>
+        </p>
+      </section>
+    </main>
+    <dialog class="dialog" id="reward-dialog" aria-labelledby="reward-heading">
+      <form id="reward-form">
+        <div class="modal-heading">
+          <h2 id="reward-heading">Add reward</h2>
+          <button
+            type="button"
+            class="icon-button"
+            data-close="reward-dialog"
+            aria-label="Close"
+            data-icon="close"
+          ></button>
+        </div>
+        <label class="field"
+          >Name<input
+            id="reward-name"
+            maxlength="100"
+            required
+            placeholder="e.g. Movie night"
+            autocomplete="off"
+        /></label>
+        <div class="form-row">
+          <label class="field"
+            >Category<select id="reward-kind">
+              <option value="Filme">Movie</option>
+              <option value="Jogo">Game</option>
+              <option value="Item">Item</option>
+              <option value="Experiência">Experience</option>
+            </select></label
+          ><label class="field"
+            >Cost (hours)<input
+              id="reward-cost"
+              type="number"
+              min="0.25"
+              max="10000"
+              step="0.25"
+              value="2"
+              required
+          /></label>
+        </div>
+        <span class="field" style="margin-bottom: 0"
+          >Cover <span class="hint">· optional</span></span
+        >
+        <div class="image-controls">
+          <div class="art" id="preview-art"></div>
+          <div>
+            <div class="image-tabs">
+              <button
+                type="button"
+                class="chip"
+                id="url-tab"
+                aria-pressed="true"
+              >
+                URL</button
+              ><button
+                type="button"
+                class="chip"
+                id="file-tab"
+                aria-pressed="false"
+              >
+                Upload
+              </button>
+            </div>
+            <div id="url-panel">
+              <input
+                id="image-url"
+                type="url"
+                placeholder="https://…/image.jpg"
+                aria-label="Image URL"
+              />
+            </div>
+            <div id="file-panel" hidden>
+              <label class="file-label"
+                >Choose image<input
+                  id="image-file"
+                  type="file"
+                  accept="image/jpeg,image/png,image/webp,image/gif"
+                  aria-label="Select image file"
+              /></label>
+            </div>
+            <button type="button" class="clear-image" id="clear-image">
+              Remove cover
+            </button>
+          </div>
+        </div>
+        <p class="hint">
+          JPG, PNG, WebP, GIF · Up to 10 MB · GIFs saved as still images.
+        </p>
+        <p id="image-status" class="hint" role="status"></p>
+        <p id="form-error" class="error" role="alert"></p>
+        <div class="modal-footer">
+          <button type="button" id="delete-reward" class="delete" hidden>
+            Delete</button
+          ><button type="button" class="secondary" data-close="reward-dialog">
+            Cancel</button
+          ><button id="save-reward" class="primary" type="submit">Save</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog
+      class="dialog"
+      id="settings-dialog"
+      aria-labelledby="settings-heading"
+    >
+      <form id="settings-form">
+        <div class="modal-heading">
+          <h2 id="settings-heading">Settings</h2>
+          <button
+            type="button"
+            class="icon-button"
+            data-close="settings-dialog"
+            aria-label="Close"
+            data-icon="close"
+          ></button>
+        </div>
+        <label class="field"
+          >Study project<select id="project-select">
+            <option value="">All projects</option>
+          </select></label
+        >
+        <label class="field"
+          >Weekly goal (hours)<input
+            id="weekly-goal"
+            type="number"
+            min="1"
+            max="168"
+            step="1"
+            required
+            value="20"
+        /></label>
+        <p class="hint">
+          Resets Monday (local time). Unused hours expire. Changing projects
+          keeps previous redemptions.
+        </p>
+        <p id="settings-error" class="error" role="alert"></p>
+        <div class="modal-footer">
+          <button type="button" class="secondary" data-close="settings-dialog">
+            Cancel</button
+          ><button type="submit" class="primary">Save</button>
+        </div>
+      </form>
+    </dialog>
+    <dialog class="dialog" id="confirm-dialog" aria-labelledby="confirm-title">
+      <div class="modal-heading">
+        <h2 id="confirm-title"></h2>
+        <button
+          type="button"
+          class="icon-button"
+          data-close="confirm-dialog"
+          aria-label="Close"
+          data-icon="close"
+        ></button>
+      </div>
+      <p id="confirm-text" style="color: #bdc6bf"></p>
+      <p id="confirm-error" class="error" role="alert"></p>
+      <div class="modal-footer">
+        <button class="secondary" data-close="confirm-dialog">Cancel</button
+        ><button class="primary" id="confirm-action">Confirm</button>
+      </div>
+    </dialog>
+    <div id="toast" class="toast" role="status" hidden></div>
+    <script>
+      "use strict";
+      const $ = (id) => document.getElementById(id);
+      const HOUR = 3600000,
+        STORAGE_KEY = "gamification-preview-v1";
+      const KINDS = ["Filme", "Jogo", "Item", "Experiência"];
+      const ICONS = {
+        settings:
+          '<circle cx="12" cy="12" r="3"/><path d="m9 3-1 3-3 1-2 3 2 3v4l3 2 3-1 3 3 3-2v-3l3-2v-4l-3-1-1-3-4-1Z"/>',
+        plus: '<path d="M12 5v14M5 12h14"/>',
+        close: '<path d="m6 6 12 12M6 18 18 6"/>',
+        clock: '<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+        grid: '<rect x="3" y="3" width="7" height="7" rx="1"/><rect x="14" y="3" width="7" height="7" rx="1"/><rect x="3" y="14" width="7" height="7" rx="1"/><rect x="14" y="14" width="7" height="7" rx="1"/>',
+        list: '<path d="M8 5h13M8 12h13M8 19h13M3 5h.1M3 12h.1M3 19h.1"/>',
+        search: '<circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 5 5"/>',
+        info: '<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',
+        gift: '<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13"/><path d="M12 8C3 8 6 0 10 4l2 4Zm0 0c9 0 6-8 2-4l-2 4Z"/>',
+        film: '<rect x="3" y="4" width="18" height="16" rx="2"/><path d="M7 4v16M17 4v16M3 8h4M3 12h4M3 16h4M17 8h4M17 12h4M17 16h4"/>',
+        game: '<path d="M7 7h10c3 0 6 13 2 13l-4-4H9l-4 4C1 20 4 7 7 7Z"/><path d="M8 10v5M5.5 12.5h5M16 11h.1M18 14h.1"/>',
+        star: '<path d="m12 3 3 6 7 1-5 5 1 7-6-3-6 3 1-7-5-5 7-1Z"/>',
+        edit: '<path d="m15 4 5 5M4 16 16 4a2 2 0 0 1 4 4L8 20H4Z"/>',
+        check: '<circle cx="12" cy="12" r="9"/><path d="m7 12 3 3 7-7"/>',
+      };
+      const icon = (name) =>
+        '<svg viewBox="0 0 24 24" aria-hidden="true">' +
+        (ICONS[name] || ICONS.gift) +
+        "</svg>";
+      document
+        .querySelectorAll("[data-icon]")
+        .forEach((el) => (el.innerHTML = icon(el.dataset.icon)));
+      const kindIcon = (kind) =>
+        ({ Filme: "film", Jogo: "game", Item: "gift", Experiência: "star" })[
+          kind
+        ] || "gift";
+      // Keep stored category IDs compatible with existing rewards.
+      const kindLabel = (kind) =>
+        ({
+          Filme: "Movie",
+          Jogo: "Game",
+          Item: "Item",
+          Experiência: "Experience",
+        })[kind] || "Item";
+      const defaultState = () => ({
+        version: 1,
+        rewards: [],
+        redemptions: [],
+        settings: { projectId: "", weeklyGoal: 20, view: "grid" },
+      });
+      let state = defaultState(),
+        tasks = [],
+        projects = [],
+        ready = false,
+        dataReady = false,
+        busy = false,
+        refreshPromise = null;
+      let filter = "Todos",
+        tab = "catalog",
+        editing = null,
+        draftImage = "",
+        imageMode = "url",
+        imageBusy = false,
+        imageToken = 0;
+      let confirmHandler = null,
+        toastTimer,
+        refreshTimer,
+        lastLoaded = 0,
+        demo = false;
+      function dateKey(date) {
+        return (
+          date.getFullYear() +
+          "-" +
+          String(date.getMonth() + 1).padStart(2, "0") +
+          "-" +
+          String(date.getDate()).padStart(2, "0")
+        );
+      }
+      function weekDates(now = new Date()) {
+        const monday = new Date(now);
+        monday.setHours(0, 0, 0, 0);
+        monday.setDate(monday.getDate() - ((monday.getDay() + 6) % 7));
+        return Array.from({ length: 7 }, (_, i) => {
+          const day = new Date(monday);
+          day.setDate(day.getDate() + i);
+          return dateKey(day);
+        });
+      }
+      function duration(ms) {
+        const mins = Math.floor(Math.max(0, ms) / 60000);
+        return (
+          Math.floor(mins / 60) +
+          "h" +
+          (mins % 60 ? " " + String(mins % 60).padStart(2, "0") + "min" : "")
+        );
+      }
+      function validImage(value) {
+        if (typeof value !== "string") return "";
+        if (
+          /^data:image\/(jpeg|png|webp);base64,[A-Za-z0-9+/=]+$/.test(value) &&
+          value.length < 125000
+        )
+          return value;
+        try {
+          const url = new URL(value);
+          return ["https:", "http:"].includes(url.protocol) &&
+            !url.username &&
+            !url.password &&
+            value.length < 4096
+            ? url.href
+            : "";
+        } catch {
+          return "";
+        }
+      }
+      function validateState(raw) {
+        if (raw == null || raw === "") return defaultState();
+        const input = typeof raw === "string" ? JSON.parse(raw) : raw;
+        if (
+          !input ||
+          input.version !== 1 ||
+          !Array.isArray(input.rewards) ||
+          !Array.isArray(input.redemptions)
+        )
+          throw Error("Unsupported saved data. Nothing was changed.");
+        const result = defaultState(),
+          ids = new Set();
+        for (const reward of input.rewards) {
+          if (
+            !reward ||
+            typeof reward.id !== "string" ||
+            ids.has(reward.id) ||
+            typeof reward.name !== "string" ||
+            !reward.name.trim() ||
+            !KINDS.includes(reward.kind) ||
+            !Number.isSafeInteger(reward.costMs) ||
+            reward.costMs < 900000 ||
+            reward.costMs > 10000 * HOUR
+          )
+            throw Error("Invalid saved reward. Nothing was changed.");
+          ids.add(reward.id);
+          result.rewards.push({
+            id: reward.id,
+            name: reward.name.slice(0, 100),
+            kind: reward.kind,
+            costMs: reward.costMs,
+            image: validImage(reward.image),
+          });
+        }
+        const txIds = new Set();
+        for (const tx of input.redemptions) {
+          if (
+            !tx ||
+            typeof tx.id !== "string" ||
+            txIds.has(tx.id) ||
+            typeof tx.name !== "string" ||
+            typeof tx.rewardId !== "string" ||
+            !Number.isSafeInteger(tx.costMs) ||
+            tx.costMs <= 0 ||
+            !Number.isFinite(Date.parse(tx.at)) ||
+            !/^\d{4}-\d{2}-\d{2}$/.test(tx.week)
+          )
+            throw Error("Invalid history. Nothing was changed.");
+          txIds.add(tx.id);
+          result.redemptions.push({
+            id: tx.id,
+            rewardId: tx.rewardId,
+            name: tx.name.slice(0, 100),
+            costMs: tx.costMs,
+            at: tx.at,
+            week: tx.week,
+            kind: KINDS.includes(tx.kind) ? tx.kind : "Item",
+            undone: tx.undone === true,
+          });
+        }
+        const cfg = input.settings || {};
+        result.settings = {
+          projectId: typeof cfg.projectId === "string" ? cfg.projectId : "",
+          weeklyGoal:
+            Number.isFinite(cfg.weeklyGoal) &&
+            cfg.weeklyGoal >= 1 &&
+            cfg.weeklyGoal <= 168
+              ? cfg.weeklyGoal
+              : 20,
+          view: cfg.view === "list" ? "list" : "grid",
+        };
+        return result;
+      }
+      function metrics(source = tasks, s = state, now = new Date()) {
+        const days = weekDates(now),
+          today = dateKey(now),
+          daily = days.map(() => 0);
+        const unique = new Map(
+          source
+            .filter((t) => t && typeof t.id === "string")
+            .map((t) => [t.id, t]),
+        );
+        for (const task of unique.values()) {
+          if (
+            task.parentId ||
+            (s.settings.projectId && task.projectId !== s.settings.projectId)
+          )
+            continue;
+          days.forEach((day, i) => {
+            const n = task.timeSpentOnDay?.[day];
+            if (day <= today && Number.isFinite(n) && n > 0) daily[i] += n;
+          });
+        }
+        const earned = daily.reduce((a, b) => a + b, 0);
+        const spent = s.redemptions
+          .filter((x) => !x.undone && x.week === days[0])
+          .reduce((a, b) => a + b.costMs, 0);
+        return {
+          days,
+          daily,
+          earned,
+          spent,
+          balance: Math.max(0, earned - spent),
+        };
+      }
+      function notify(message) {
+        $("toast").textContent = message;
+        $("toast").hidden = false;
+        clearTimeout(toastTimer);
+        toastTimer = setTimeout(() => ($("toast").hidden = true), 4200);
+      }
+      function notice(message) {
+        $("notice-text").textContent = message;
+        $("notice").hidden = !message;
+      }
+      function element(tag, cls, text) {
+        const el = document.createElement(tag);
+        if (cls) el.className = cls;
+        if (text !== undefined) el.textContent = text;
+        return el;
+      }
+      function art(kind, image, preview = false) {
+        const el = element("div", "art");
+        el.dataset.kind = kind;
+        el.innerHTML = icon(kindIcon(kind));
+        if (image) {
+          const img = new Image();
+          img.alt = preview ? "Image preview" : "";
+          img.loading = preview ? "eager" : "lazy";
+          img.referrerPolicy = "no-referrer";
+          img.addEventListener("error", () => {
+            img.remove();
+            el.append(element("span", "image-failed", "Image unavailable"));
+          });
+          img.src = image;
+          el.append(img);
+        }
+        return el;
+      }
+      function render() {
+        const m = metrics(),
+          short = (d) =>
+            new Date(d + "T12:00:00").toLocaleDateString("en-US", {
+              day: "2-digit",
+              month: "short",
+            });
+        $("week-label").textContent =
+          short(m.days[0]) + " — " + short(m.days[6]) + "";
+        $("studied").replaceChildren(
+          document.createTextNode(dataReady ? duration(m.earned) : "—"),
+          element("span", "", " studied"),
+        );
+        $("balance").textContent = dataReady ? duration(m.balance) : "—";
+        $("spent").textContent = duration(m.spent);
+        const goal = state.settings.weeklyGoal * HOUR,
+          pct = Math.min(100, Math.floor((m.earned / goal) * 100));
+        $("goal-summary").textContent = dataReady
+          ? Math.round((m.earned / HOUR) * 10) / 10 +
+            " / " +
+            state.settings.weeklyGoal +
+            " h"
+          : "—";
+        $("goal-caption").textContent =
+          "Goal: " + state.settings.weeklyGoal + "h";
+        $("goal-percent").textContent = pct + "%";
+        $("goal-progress").style.width = pct + "%";
+        $("bars").replaceChildren();
+        const max = Math.max(HOUR, ...m.daily);
+        m.days.forEach((date, i) => {
+          const day = element(
+            "div",
+            "day" + (date === dateKey(new Date()) ? " today" : ""),
+          );
+          const track = element("div", "track"),
+            bar = element("div", "bar");
+          bar.style.height = (m.daily[i] / max) * 100 + "%";
+          track.append(bar);
+          day.title =
+            [
+              "Monday",
+              "Tuesday",
+              "Wednesday",
+              "Thursday",
+              "Friday",
+              "Saturday",
+              "Sunday",
+            ][i] +
+            ": " +
+            duration(m.daily[i]);
+          day.setAttribute("aria-label", day.title);
+          day.append(
+            track,
+            element(
+              "small",
+              "",
+              ["MON", "TUE", "WED", "THU", "FRI", "SAT", "SUN"][i],
+            ),
+          );
+          $("bars").append(day);
+        });
+        const project = projects.find((p) => p.id === state.settings.projectId);
+        $("scope-note").textContent =
+          (state.settings.projectId
+            ? project?.title || "Unavailable project"
+            : "All projects") + " · Resets Monday";
+        $("cards").classList.toggle("list", state.settings.view === "list");
+        $("grid-view").setAttribute(
+          "aria-pressed",
+          String(state.settings.view === "grid"),
+        );
+        $("list-view").setAttribute(
+          "aria-pressed",
+          String(state.settings.view === "list"),
+        );
+        $("add").disabled = !ready || busy;
+        $("settings-open").disabled = !ready || busy;
+        $("cards").hidden = tab !== "catalog";
+        $("history").hidden = tab !== "history";
+        $("toolbar").hidden = tab !== "catalog";
+        $("catalog-tab").classList.toggle("selected", tab === "catalog");
+        $("history-tab").classList.toggle("selected", tab === "history");
+        $("catalog-tab").setAttribute(
+          "aria-pressed",
+          String(tab === "catalog"),
+        );
+        $("history-tab").setAttribute(
+          "aria-pressed",
+          String(tab === "history"),
+        );
+        renderCards(m);
+        renderHistory();
+        document.body.classList.toggle("loading", !ready);
+      }
+      function renderCards(m) {
+        const list = state.rewards.filter(
+          (r) =>
+            (filter === "Todos" || r.kind === filter) &&
+            r.name
+              .toLocaleLowerCase("en-US")
+              .includes($("search").value.toLocaleLowerCase("en-US")),
+        );
+        $("cards").replaceChildren();
+        if (!list.length) {
+          const empty = element("div", "empty");
+          empty.innerHTML = icon("gift");
+          empty.append(
+            element(
+              "h3",
+              "",
+              state.rewards.length ? "No matches" : "No rewards yet",
+            ),
+            element(
+              "p",
+              "",
+              state.rewards.length
+                ? "Try another search."
+                : "Add something worth studying for.",
+            ),
+          );
+          if (!state.rewards.length) {
+            const add = element("button", "primary", "Add reward");
+            add.disabled = !ready || busy;
+            add.onclick = () => openReward();
+            empty.append(add);
+          }
+          $("cards").append(empty);
+          return;
+        }
+        for (const r of list) {
+          const card = element("article", "card"),
+            edit = element("button", "icon-button edit-card");
+          edit.innerHTML = icon("edit");
+          edit.title = "Edit " + r.name;
+          edit.setAttribute("aria-label", edit.title);
+          edit.disabled = busy;
+          edit.onclick = () => openReward(r.id);
+          const info = element("div", "card-info"),
+            name = element("h3", "", r.name);
+          name.title = r.name;
+          info.append(name, element("p", "kind", kindLabel(r.kind)));
+          const costRow = element("div", "cost-row"),
+            cost = element("span", "cost");
+          cost.innerHTML = icon("clock");
+          cost.append(document.createTextNode(duration(r.costMs)));
+          const can = dataReady && m.balance >= r.costMs,
+            button = element(
+              "button",
+              "redeem",
+              can
+                ? "Redeem"
+                : dataReady
+                  ? "Need " + duration(r.costMs - m.balance)
+                  : "Syncing",
+            );
+          button.disabled = !can || busy || !ready;
+          button.setAttribute(
+            "aria-label",
+            (can ? "Redeem " : "Not enough hours for ") + r.name,
+          );
+          button.onclick = () => confirmRedeem(r.id);
+          costRow.append(cost, button);
+          card.append(art(r.kind, r.image), edit, info, costRow);
+          $("cards").append(card);
+        }
+      }
+      function renderHistory() {
+        $("history").replaceChildren();
+        if (!state.redemptions.length) {
+          const empty = element("div", "empty");
+          empty.innerHTML = icon("clock");
+          empty.append(
+            element("h3", "", "No redemptions yet"),
+            element("p", "", "Your redeemed rewards appear here."),
+          );
+          $("history").append(empty);
+          return;
+        }
+        [...state.redemptions].reverse().forEach((tx) => {
+          const row = element("div", "history-row");
+          row.innerHTML = icon(tx.undone ? "clock" : "check");
+          const info = element("div", "history-info");
+          info.append(
+            element("strong", "", tx.name),
+            element(
+              "small",
+              "",
+              new Date(tx.at).toLocaleString("en-US", {
+                dateStyle: "short",
+                timeStyle: "short",
+              }) + (tx.undone ? " · Undone" : ""),
+            ),
+          );
+          row.append(
+            info,
+            element(
+              "span",
+              "history-cost",
+              (tx.undone ? "↩ " : "− ") + duration(tx.costMs),
+            ),
+          );
+          if (!tx.undone) {
+            const undo = element("button", "undo", "Undo");
+            undo.disabled = busy;
+            undo.onclick = () =>
+              openConfirm(
+                "Undo redemption?",
+                tx.week === weekDates()[0]
+                  ? "Return these hours to your balance?"
+                  : "Past week. Your current balance stays the same.",
+                async () => {
+                  await mutate((s) => {
+                    const found = s.redemptions.find((t) => t.id === tx.id);
+                    if (found) found.undone = true;
+                  });
+                  notify("Redemption undone.");
+                },
+              );
+            row.append(undo);
+          }
+          $("history").append(row);
+        });
+      }
+      async function readState() {
+        return validateState(
+          window.PluginAPI
+            ? await window.PluginAPI.loadSyncedData()
+            : (localStorage.getItem(STORAGE_KEY) ?? localStorage.getItem("tempo-livre-preview-v1")),
+        );
+      }
+      async function mutate(change) {
+        if (busy) throw Error("Still saving. Please wait.");
+        if (!ready) throw Error("Still loading. Please wait.");
+        busy = true;
+        render();
+        try {
+          const next = await readState();
+          change(next);
+          const data = JSON.stringify(next);
+          if (new TextEncoder().encode(data).length > 900000)
+            throw Error("Storage full. Use image URLs or remove a cover.");
+          if (window.PluginAPI) await window.PluginAPI.persistDataSynced(data);
+          else localStorage.setItem(STORAGE_KEY, data);
+          state = next;
+        } finally {
+          busy = false;
+          render();
+        }
+      }
+      async function refresh() {
+        if (refreshPromise) return refreshPromise;
+        refreshPromise = (async () => {
+          try {
+            if (window.PluginAPI) {
+              const [active, archive, allProjects] = await Promise.all([
+                window.PluginAPI.getTasks(),
+                window.PluginAPI.getArchivedTasks(),
+                window.PluginAPI.getAllProjects(),
+              ]);
+              if (
+                !Array.isArray(active) ||
+                !Array.isArray(archive) ||
+                !Array.isArray(allProjects)
+              )
+                throw Error("Unexpected Super Productivity response.");
+              tasks = [...archive, ...active];
+              projects = allProjects;
+              dataReady = true;
+              lastLoaded = Date.now();
+              if (!busy && ready) state = await readState();
+
+              notice("");
+            } else if (demo) {
+              dataReady = true;
+            }
+          } catch (e) {
+            dataReady = false;
+            notice("Hours unavailable. Redemptions paused. " + e.message);
+          }
+          render();
+        })();
+        try {
+          await refreshPromise;
+        } finally {
+          refreshPromise = null;
+        }
+      }
+      function openReward(id = null) {
+        editing = id;
+        const r = state.rewards.find((x) => x.id === id);
+        $("reward-form").reset();
+        $("reward-heading").textContent = r ? "Edit reward" : "Add reward";
+        $("reward-name").value = r?.name || "";
+        $("reward-kind").value = r?.kind || "Filme";
+        $("reward-cost").value = r ? r.costMs / HOUR : 2;
+        draftImage = r?.image || "";
+        imageBusy = false;
+        $("save-reward").disabled = false;
+        imageToken++;
+        imageMode = draftImage.startsWith("data:") ? "file" : "url";
+        $("image-url").value = imageMode === "url" ? draftImage : "";
+        $("image-status").textContent = draftImage.startsWith("data:")
+          ? "Cover saved."
+          : "";
+        $("form-error").textContent = "";
+        $("delete-reward").hidden = !r;
+        setImageMode(imageMode);
+        preview();
+        $("reward-dialog").showModal();
+        $("reward-name").focus();
+      }
+      function setImageMode(mode) {
+        imageMode = mode;
+        $("url-panel").hidden = mode !== "url";
+        $("file-panel").hidden = mode !== "file";
+        $("url-tab").setAttribute("aria-pressed", String(mode === "url"));
+        $("file-tab").setAttribute("aria-pressed", String(mode === "file"));
+      }
+      function preview() {
+        const next = art($("reward-kind").value, draftImage, true);
+        next.id = "preview-art";
+        $("preview-art").replaceWith(next);
+      }
+      async function compressImage(file) {
+        if (
+          !["image/jpeg", "image/png", "image/webp", "image/gif"].includes(
+            file.type,
+          )
+        )
+          throw Error("Choose JPG, PNG, WebP or GIF.");
+        if (file.size > 10 * 1024 * 1024)
+          throw Error("Maximum file size: 10 MB.");
+        const url = URL.createObjectURL(file);
+        try {
+          const img = await new Promise((resolve, reject) => {
+            const i = new Image();
+            i.onload = () => resolve(i);
+            i.onerror = () => reject(Error("Cannot open this image."));
+            i.src = url;
+          });
+          if (!img.naturalWidth || !img.naturalHeight)
+            throw Error("Invalid image file.");
+          const scale = Math.min(
+              1,
+              480 / img.naturalWidth,
+              480 / img.naturalHeight,
+            ),
+            canvas = document.createElement("canvas");
+          canvas.width = Math.max(1, Math.round(img.naturalWidth * scale));
+          canvas.height = Math.max(1, Math.round(img.naturalHeight * scale));
+          const ctx = canvas.getContext("2d");
+          ctx.fillStyle = "#202020";
+          ctx.fillRect(0, 0, canvas.width, canvas.height);
+          ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+          let data = canvas.toDataURL("image/jpeg", 0.78);
+          if (data.length > 100000) data = canvas.toDataURL("image/jpeg", 0.5);
+          if (data.length > 120000)
+            throw Error("Image too large. Choose a smaller one.");
+          return data;
+        } finally {
+          URL.revokeObjectURL(url);
+        }
+      }
+      function openConfirm(title, message, handler) {
+        $("confirm-title").textContent = title;
+        $("confirm-text").textContent = message;
+        $("confirm-error").textContent = "";
+        confirmHandler = handler;
+        $("confirm-action").disabled = false;
+        $("confirm-dialog").showModal();
+      }
+      function confirmRedeem(id) {
+        const reward = state.rewards.find((r) => r.id === id);
+        if (!reward) return;
+        openConfirm(
+          "Redeem reward?",
+          "Redeem “" + reward.name + "” for " + duration(reward.costMs) + "?",
+          async () => {
+            await refresh();
+            if (!dataReady) throw Error("Refresh your hours first.");
+            await mutate((s) => {
+              const r = s.rewards.find((x) => x.id === id);
+              if (!r) throw Error("This reward was deleted.");
+              if (r.costMs !== reward.costMs)
+                throw Error("The cost changed. Close and try again.");
+              if (metrics(tasks, s).balance < r.costMs)
+                throw Error("Not enough hours.");
+              s.redemptions.push({
+                id: crypto.randomUUID(),
+                rewardId: r.id,
+                name: r.name,
+                kind: r.kind,
+                costMs: r.costMs,
+                at: new Date().toISOString(),
+                week: weekDates()[0],
+                undone: false,
+              });
+            });
+            notify("Reward redeemed.");
+          },
+        );
+      }
+      $("confirm-action").onclick = async () => {
+        const btn = $("confirm-action");
+        btn.disabled = true;
+        try {
+          await confirmHandler();
+          $("confirm-dialog").close();
+        } catch (e) {
+          $("confirm-error").textContent = e.message;
+        } finally {
+          btn.disabled = false;
+        }
+      };
+      document.querySelectorAll("[data-close]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            if (!busy) $(b.dataset.close).close();
+          }),
+      );
+      document.querySelectorAll("dialog").forEach((d) =>
+        d.addEventListener("cancel", (event) => {
+          if (busy) event.preventDefault();
+        }),
+      );
+      $("add").onclick = () => openReward();
+      $("url-tab").onclick = () => setImageMode("url");
+      $("file-tab").onclick = () => setImageMode("file");
+      $("image-url").oninput = () => {
+        imageToken++;
+        imageBusy = false;
+        draftImage = validImage($("image-url").value.trim());
+        $("form-error").textContent = "";
+        $("image-status").textContent = "";
+        $("save-reward").disabled = false;
+        preview();
+      };
+      $("reward-kind").onchange = preview;
+      $("clear-image").onclick = () => {
+        imageToken++;
+        imageBusy = false;
+        draftImage = "";
+        $("image-url").value = "";
+        $("image-file").value = "";
+        $("image-status").textContent = "";
+        $("save-reward").disabled = false;
+        preview();
+      };
+      $("image-file").onchange = async () => {
+        const file = $("image-file").files[0];
+        if (!file) return;
+        const token = ++imageToken;
+        imageBusy = true;
+        $("save-reward").disabled = true;
+        $("form-error").textContent = "";
+        $("image-status").textContent = "Processing…";
+        try {
+          const data = await compressImage(file);
+          if (token !== imageToken) return;
+          draftImage = data;
+          $("image-url").value = "";
+          $("image-status").textContent = file.name + " · ready";
+          preview();
+        } catch (e) {
+          if (token === imageToken) {
+            $("form-error").textContent = e.message;
+            $("image-status").textContent = "";
+            $("image-file").value = "";
+          }
+        } finally {
+          if (token === imageToken) {
+            imageBusy = false;
+            $("save-reward").disabled = false;
+          }
+        }
+      };
+      $("reward-form").onsubmit = async (event) => {
+        event.preventDefault();
+        if (imageBusy || busy) return;
+        const name = $("reward-name").value.trim(),
+          hours = Number($("reward-cost").value),
+          kind = $("reward-kind").value;
+        if (
+          !name ||
+          !KINDS.includes(kind) ||
+          !Number.isFinite(hours) ||
+          hours < 0.25 ||
+          hours > 10000
+        ) {
+          $("form-error").textContent = "Enter a name and a valid cost.";
+          return;
+        }
+        if (
+          imageMode === "url" &&
+          $("image-url").value.trim() &&
+          !validImage($("image-url").value.trim())
+        ) {
+          $("form-error").textContent = "Use an HTTP or HTTPS image URL.";
+          return;
+        }
+        const reward = {
+          id: editing || crypto.randomUUID(),
+          name,
+          kind,
+          costMs: Math.round(hours * HOUR),
+          image: draftImage,
+        };
+        $("save-reward").disabled = true;
+        try {
+          await mutate((s) => {
+            const i = s.rewards.findIndex((x) => x.id === reward.id);
+            if (editing && i < 0)
+              throw Error("Reward deleted. Close and try again.");
+            if (i >= 0) s.rewards[i] = reward;
+            else s.rewards.push(reward);
+          });
+          $("reward-dialog").close();
+          notify(editing ? "Reward updated." : "Reward added.");
+        } catch (e) {
+          $("form-error").textContent = "Could not save. " + e.message;
+        } finally {
+          $("save-reward").disabled = false;
+        }
+      };
+      $("delete-reward").onclick = () => {
+        const id = editing;
+        openConfirm(
+          "Delete reward?",
+          "History and spent hours will be kept.",
+          async () => {
+            await mutate((s) => {
+              s.rewards = s.rewards.filter((r) => r.id !== id);
+            });
+            $("reward-dialog").close();
+            notify("Reward deleted.");
+          },
+        );
+      };
+      $("settings-open").onclick = () => {
+        $("project-select").replaceChildren(new Option("All projects", ""));
+        for (const p of projects)
+          $("project-select").add(new Option(p.title || "Untitled", p.id));
+        if (
+          state.settings.projectId &&
+          !projects.some((p) => p.id === state.settings.projectId)
+        )
+          $("project-select").add(
+            new Option("Unavailable project", state.settings.projectId),
+          );
+        $("project-select").value = state.settings.projectId;
+        $("weekly-goal").value = state.settings.weeklyGoal;
+        $("settings-error").textContent = "";
+        $("settings-dialog").showModal();
+      };
+      $("settings-form").onsubmit = async (e) => {
+        e.preventDefault();
+        if (busy) return;
+        const projectId = $("project-select").value,
+          goal = Number($("weekly-goal").value);
+        if (!Number.isFinite(goal) || goal < 1 || goal > 168) return;
+        try {
+          await mutate((s) => {
+            s.settings.projectId = projectId;
+            s.settings.weeklyGoal = goal;
+          });
+          $("settings-dialog").close();
+          notify("Settings saved.");
+        } catch (err) {
+          $("settings-error").textContent = err.message;
+        }
+      };
+      $("filters").onclick = (e) => {
+        const b = e.target.closest("[data-filter]");
+        if (!b) return;
+        filter = b.dataset.filter;
+        $("filters")
+          .querySelectorAll("button")
+          .forEach((x) => x.setAttribute("aria-pressed", String(x === b)));
+        render();
+      };
+      $("search").oninput = () => renderCards(metrics());
+      $("catalog-tab").onclick = () => {
+        tab = "catalog";
+        render();
+      };
+      $("history-tab").onclick = () => {
+        tab = "history";
+        render();
+      };
+      for (const view of ["grid", "list"])
+        $(view + "-view").onclick = async () => {
+          try {
+            await mutate((s) => (s.settings.view = view));
+          } catch (e) {
+            notify(e.message);
+          }
+        };
+      $("retry").onclick = async () => {
+        if (!ready) await init();
+        else await refresh();
+      };
+      window.addEventListener("message", (e) => {
+        if (
+          e.source !== window.parent ||
+          e.data?.type !== "SP_STATE_CHANGED" ||
+          !ready
+        )
+          return;
+        clearTimeout(refreshTimer);
+        refreshTimer = setTimeout(refresh, 700);
+      });
+      document.addEventListener("visibilitychange", () => {
+        if (!document.hidden && ready) refresh();
+      });
+      function createDemo() {
+        const days = weekDates(),
+          today = dateKey(new Date());
+        tasks = [
+          {
+            id: "preview",
+            projectId: "study",
+            timeSpentOnDay: Object.fromEntries(
+              days
+                .filter((d) => d <= today)
+                .map((d, i) => [d, [3, 2.5, 4, 2, 1.5, 1, 0][i] * HOUR]),
+            ),
+          },
+        ];
+        projects = [{ id: "study", title: "Study" }];
+      }
+      async function init() {
+        try {
+          demo =
+            !window.PluginAPI &&
+            window.self === window.top &&
+            new URLSearchParams(location.search).get("demo") === "1";
+          if (!window.PluginAPI && !demo) {
+            ready = false;
+            notice("Open in Super Productivity to connect your hours.");
+
+            render();
+            return;
+          }
+          state = await readState();
+          ready = true;
+          if (demo) {
+            createDemo();
+            dataReady = true;
+
+            notice("Demo hours · Saved in this browser only.");
+            $("retry").hidden = true;
+          }
+          await refresh();
+          render();
+        } catch (e) {
+          ready = false;
+          notice("Could not load your data. " + e.message);
+          render();
+        }
+      }
+      window.RewardsCore = {
+        weekDates,
+        dateKey,
+        metrics,
+        validateState,
+        validImage,
+        duration,
+      };
+      render();
+      setTimeout(init, 500);
+      setInterval(() => {
+        if (ready && !document.hidden && !busy) refresh();
+      }, 30000);
+    </script>
+  </body>
+</html>
