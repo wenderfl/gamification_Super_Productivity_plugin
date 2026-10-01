@@ -1,8 +1,11 @@
 # Gamification
+<img width="1290" height="993" alt="image" src="https://github.com/user-attachments/assets/4ca6a781-6e06-46df-a63e-1c32e23fa023" />
 
 A minimal study rewards plugin for Super Productivity, adapted from [sp-dashboard](https://github.com/ahanel13/sp-dashboard). Original MIT license preserved.
 
 ## Install or update
+
+
 
 1. Open **Super Productivity → Settings → Plugins**.
 2. Import **gamification.zip** from the project root.
